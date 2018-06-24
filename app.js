@@ -9,6 +9,7 @@ newsandactions.controller("list", [
     $scope.alldata = [];
     $scope.itemdetails = false;
     $scope.openadditem = false;
+    $scope.sortby = "";
     $scope.this_item = {};
     $scope.fields = {
       action: {
