@@ -157,6 +157,19 @@ button {
     letter-spacing: 3px;
 }
 
+.actionlist th span {
+    background-color: #DDD;
+    color: #333;
+    border-radius: 3px;
+    padding: 3px 10px;
+    cursor: pointer
+}
+
+.actionlist th span.active {
+    background-color: rgb(0, 129, 6);
+    color: #fff;
+}
+
 button.deleted {
     background-color: rgb(194, 0, 0);
 }
