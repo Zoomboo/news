@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC" -//W3C//DTD XHTML 1.0 Transitional//EN""http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html ng-app="newsandactions" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=0" />
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-filter/0.5.1/angular-filter.js"></script>
+    <script src="app.js"></script>
+    <link href="gstyle.css" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&amp;subset=cyrillic" rel="stylesheet">
+</head>
+
+<body>
+    <div ng-controller="list" class="controller">
+        <div class='preloader'></div>
+        <div class="container">
+
+            <div class='actionlist'>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+
+                            <th>
+                                <span style="float:right">
+                                    <button class="additem" ng-click="!openadditem?openadditem=true:false">Добавить событие</button>
+                                </span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-if="!taction.deleted" ng-repeat="(ndx,taction) in alldata" ng-init="
+                        !taction.title?taction.title='Транзакция №'+ndx:'';
+                        
+                        " ng-click="opendetails(taction)">
+                            <td ng-class="taction.class">{{ndx+1}}</td>
+                            <td colspan="{{colspan}}" ng-if="fields[taction.type][field].in_table" ng-repeat="(field,val) in taction" ng-init="
+                                val&&fields[taction.type][field].true_class?taction.class=fields[taction.type][field].true_class:'';
+                                !val&&fields[taction.type][field].false_class?taction.class=fields[taction.type][field].false_class:'';
+                                    val&&fields[taction.type][field].true_val?val=fields[taction.type][field].true_val:''; 
+                                    !val&&fields[taction.type][field].false_val?val=fields[taction.type][field].false_val:'';
+                                    taction.type==='news'?colspan=5:''
+                                    ">
+                                <strong ng-if="fields[taction.type][field].showname">{{fields[taction.type][field].name}} :</strong> {{val}}
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+        <div ng-if="itemdetails&&!this_item.deleted" class='modal'>
+            <div class='modal-content'>
+                <span ng-click="closemodal()" class="modalclose">&times;</span>
+                <p ng-class="fields[this_item.type][field].class" ng-if="fields[this_item.type][field].in_details" ng-repeat="(field,val) in this_item">
+                    <strong>{{fields[this_item.type][field].name}}:</strong> {{val}}
+                </p>
+                <div class='modal-bottom'>
+                    <!--   <div ng-if="this_item.type==='news'">
+                        <input id='checked' type="checkbox" ng-checked="this_item.checked" ng-model="this_item.checked " />
+                        <label for="checked">Я ознакомился</label>
+                    </div> -->
+                    <div ng-repeat="(name,prop) in props[this_item.type]">
+                        <div ng-if="prop.type==='button'" class="prop_section {{name}}">
+                            <button ng-click="this_item[name] = prop['value']" class="{{name}}">{{prop['name']}}</button>
+                        </div>
+                        <div ng-if="prop.type==='checkbox'" class="prop_section {{name}}">
+                            <input id="{{name}}" ng-click="this_item.class!=prop.class?this_item.class=prop.class:this_item.class=''" ng-checked="this_item[name]"
+                                ng-model="this_item[name]" type="{{prop.type}}" />
+                            <label for="{{name}}">{{prop['name']}}</label>
+                        </div>
+                        <div ng-if="prop.type!='checkbox'&&prop.type!='button'" class="prop_section {{name}}">
+                            <input value='{{prop.val}}' ng-model="this_item[name]" type="{{prop.type}}" />
+                            <label>{{prop['name']}}</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class='modalback' ng-click="closemodal() "></div>
+        </div>
+        <div ng-if="openeditaction " id="editaction " class='modal'>
+            <span></span>
+        </div>
+        <div ng-if="openadditem" class='modal'>
+            <div class='modal-content'>
+                <span ng-click="closemodal()" class="modalclose">&times;</span>
+                <div ng-init="newitem={}" class='header'>Добавить событие</div>
+                <p>
+                    Добавить событие:
+                    <select ng-model="newitem['type']">
+                        <option ng-repeat="(type,field) in fields" value="{{type}}">{{type}}</option>
+                    </select>
+                    <p ng-if="params.in_addform" ng-repeat="(field, params) in fields[newitem['type']]">
+                        <span ng-if="params.type!='checkbox'&&params.type!='select'">
+                            <label for="{{field}}">{{params.name}}: </label>
+                            <input id="field" ng-model="newitem[field]" type="{{params.type}}" />
+                        </span>
+                        <span ng-if="params.type==='checkbox'">
+                            <label for="{{field}}">{{params.name}}: </label>
+                            <input id="field" ng-model="newitem[field]" type="checkbox" />
+                        </span>
+                        <span ng-if="params.type==='select'">
+                            <label>{{params.name}}: </label>
+                            <select ng-model="newitem[field]">
+                                <option ng-repeat="val in params.vals" value="{{val}}">{{val}}</option>
+                            </select>
+                        </span>
+                    </p>
+                </p>
+                <div class=' modal-bottom '>
+                    <button ng-click="additem(newitem); newitem = {}" class="additem">Добавить событие</button>
+                </div>
+            </div>
+            <div class='modalback' ng-click="closemodal() "></div>
+        </div>
+    </div>
+</body>
+
+</html>
